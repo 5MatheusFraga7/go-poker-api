@@ -1,0 +1,27 @@
+# Arquivos de compilação
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Arquivos de backup
+*~
+*.bak
+
+# Diretórios de compilação
+bin/
+pkg/
+
+# Arquivos de configuração
+.env
+
+# Dependências do Go
+/vendor/
+/go.sum
+/go.mod
+
+# Arquivos de log
+/log/
+
+# Arquivos de output do VSCode
+.vscode/
