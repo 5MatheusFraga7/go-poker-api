@@ -4,9 +4,9 @@ import "fmt"
 
 type Poker struct {
 	Deck             Deck
-	CardsInGame      DisplayPokerCards
 	Players          []Player
 	AvailablePlayers []Player
+	TableCards       []Card
 }
 
 type Player struct {
@@ -20,6 +20,12 @@ type DisplayPokerCards struct {
 	PlayerHand   []Card
 	MachineHands []Card
 	TableCards   []Card
+}
+
+type Combination struct {
+	Player      Player
+	Weight      int
+	GreaterCard Card
 }
 
 func (p *Poker) SetCardPlayers() {
@@ -53,12 +59,51 @@ func (p *Poker) GetTableCards() []Card {
 
 	tableCards := p.Deck[:5]
 	p.Deck = p.Deck[5:]
+
+	p.TableCards = tableCards
 	return tableCards
+}
+
+func (p *Poker) RemoveAvailablePlayer(playerIndex int) {
+	if playerIndex < 0 || playerIndex >= len(p.AvailablePlayers) {
+		fmt.Println("Índice inválido")
+		return
+	}
+
+	p.AvailablePlayers = append(p.AvailablePlayers[:playerIndex], p.AvailablePlayers[playerIndex+1:]...)
 }
 
 func (p *Poker) GetWinner() {
 
-	// availablePlayers := p.AvailablePlayers
+	players := p.AvailablePlayers
+	tableCards := p.TableCards
+
+	combinations := []Combination{}
+
+	for _, player := range players {
+		weight, greaterCard := CheckCombination(player.Hand, tableCards)
+		combinations = append(combinations, Combination{Player: player, Weight: weight, GreaterCard: greaterCard})
+	}
+
+	maxCombination := combinations[0]
+	combinations = combinations[1:]
+
+	for _, combination := range combinations {
+		if combination.Weight > maxCombination.Weight {
+			maxCombination = combination
+		}
+		if combination.Weight == maxCombination.Weight {
+			maxCombination = CheckTieBreak(maxCombination, combination)
+		}
+	}
 
 	// cards := p.CardsInGame
+}
+
+func CheckCombination(playerHand []Card, tableCards []Card) (int, Card) {
+	return 10, Card{}
+}
+
+func CheckTieBreak(combinationA Combination, combinationB Combination) Combination {
+	return combinationA
 }
