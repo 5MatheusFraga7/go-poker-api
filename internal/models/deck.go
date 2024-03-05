@@ -30,7 +30,7 @@ func NewDeck() Deck {
 		}
 	}
 
-	return cards
+	return cards.Shuffle()
 
 }
 
@@ -40,11 +40,7 @@ func (d Deck) print() {
 	}
 }
 
-func deal(d Deck, handSize int) (Deck, Deck) {
-	return d[:handSize], d[handSize:]
-}
-
-func (d Deck) Shuffle() {
+func (d Deck) Shuffle() Deck {
 
 	source := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(source)
@@ -53,4 +49,6 @@ func (d Deck) Shuffle() {
 		newPosition := r.Intn(len(d) - 1)
 		d[i], d[newPosition] = d[newPosition], d[i]
 	}
+
+	return d
 }
