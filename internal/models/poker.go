@@ -1,6 +1,9 @@
 package models
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 type Poker struct {
 	Deck             Deck
@@ -22,10 +25,15 @@ type DisplayPokerCards struct {
 	TableCards   []Card
 }
 
-type Combination struct {
+type Play struct {
 	Player      Player
 	Weight      int
 	GreaterCard Card
+}
+
+type Combination struct {
+	Name   string
+	Weight int
 }
 
 func (p *Poker) SetCardPlayers() {
@@ -78,32 +86,77 @@ func (p *Poker) GetWinner() {
 	players := p.AvailablePlayers
 	tableCards := p.TableCards
 
-	combinations := []Combination{}
+	plays := []Play{}
 
 	for _, player := range players {
-		weight, greaterCard := CheckCombination(player.Hand, tableCards)
-		combinations = append(combinations, Combination{Player: player, Weight: weight, GreaterCard: greaterCard})
+		weight, greaterCard := CheckPlay(player.Hand, tableCards)
+		plays = append(plays, Play{Player: player, Weight: weight, GreaterCard: greaterCard})
 	}
 
-	maxCombination := combinations[0]
-	combinations = combinations[1:]
+	maxPlay := plays[0]
+	plays = plays[1:]
 
-	for _, combination := range combinations {
-		if combination.Weight > maxCombination.Weight {
-			maxCombination = combination
+	for _, play := range plays {
+		if play.Weight > maxPlay.Weight {
+			maxPlay = play
 		}
-		if combination.Weight == maxCombination.Weight {
-			maxCombination = CheckTieBreak(maxCombination, combination)
+		if play.Weight == maxPlay.Weight {
+			maxPlay = CheckTieBreak(maxPlay, play)
 		}
 	}
 
 	// cards := p.CardsInGame
 }
 
-func CheckCombination(playerHand []Card, tableCards []Card) (int, Card) {
+func GetPokerCombinations() []Combination {
+	combinations := []Combination{
+		{Name: "One Pair", Weight: 1},
+		{Name: "Two Pairs", Weight: 2},
+		{Name: "Three of a Kind", Weight: 3},
+		{Name: "Straight", Weight: 4},
+		{Name: "Flush", Weight: 5},
+		{Name: "Full House", Weight: 6},
+		{Name: "Quadra", Weight: 7},
+		{Name: "Straight Flush", Weight: 8},
+		{Name: "Royal Flush", Weight: 9},
+	}
+	return combinations
+}
+
+func CheckPlay(playerHand []Card, tableCards []Card) (int, Card) {
+
+	CheckPair(playerHand, tableCards)
+
 	return 10, Card{}
 }
 
-func CheckTieBreak(combinationA Combination, combinationB Combination) Combination {
-	return combinationA
+func CheckPair(playerHand []Card, tableCards []Card) bool {
+	// combinations := GetPokerCombinations()
+	for _, card := range playerHand {
+		GetValueOfKeyCard(card.Value)
+	}
+
+	return false
+}
+
+func GetValueOfKeyCard(value string) int {
+	response, _ := strconv.Atoi(value)
+	switch value {
+	case "Ás":
+		return 14
+	case "Valete":
+		return 11
+	case "Dama":
+		return 12
+	case "Rei":
+		return 13
+	default:
+		return response
+	}
+}
+
+// Retorna o desempate
+
+func CheckTieBreak(PlayA Play, PlayB Play) Play {
+	return PlayA
 }
