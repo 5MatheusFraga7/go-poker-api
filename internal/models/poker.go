@@ -107,6 +107,40 @@ func (p *Poker) GetWinner() {
 
 	// cards := p.CardsInGame
 }
+func CheckPlay(playerHand []Card, tableCards []Card) (int, Card) {
+
+	CheckPair(playerHand, tableCards)
+
+	return 10, Card{}
+}
+
+func CheckPair(playerHand []Card, tableCards []Card) bool {
+	// combinations := GetPokerCombinations()
+
+	handValues := []int{}
+
+	for _, card := range playerHand {
+		handValues = append(handValues, GetValueOfCards(card.Value))
+	}
+
+	return false
+}
+
+func GetValueOfCards(value string) int {
+	response, _ := strconv.Atoi(value)
+	switch value {
+	case "Ás":
+		return 14
+	case "Valete":
+		return 11
+	case "Dama":
+		return 12
+	case "Rei":
+		return 13
+	default:
+		return response
+	}
+}
 
 func GetPokerCombinations() []Combination {
 	combinations := []Combination{
@@ -121,38 +155,6 @@ func GetPokerCombinations() []Combination {
 		{Name: "Royal Flush", Weight: 9},
 	}
 	return combinations
-}
-
-func CheckPlay(playerHand []Card, tableCards []Card) (int, Card) {
-
-	CheckPair(playerHand, tableCards)
-
-	return 10, Card{}
-}
-
-func CheckPair(playerHand []Card, tableCards []Card) bool {
-	// combinations := GetPokerCombinations()
-	for _, card := range playerHand {
-		GetValueOfKeyCard(card.Value)
-	}
-
-	return false
-}
-
-func GetValueOfKeyCard(value string) int {
-	response, _ := strconv.Atoi(value)
-	switch value {
-	case "Ás":
-		return 14
-	case "Valete":
-		return 11
-	case "Dama":
-		return 12
-	case "Rei":
-		return 13
-	default:
-		return response
-	}
 }
 
 // Retorna o desempate
