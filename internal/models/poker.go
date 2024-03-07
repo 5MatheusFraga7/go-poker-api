@@ -147,6 +147,37 @@ func (p *Poker) CheckPair(playerHand []Card, tableCards []Card) bool {
 	return false
 }
 
+func (p *Poker) CheckTwoPairs(playerHand []Card, tableCards []Card) bool {
+	handValues := []int{}
+	tableValues := []int{}
+	pairsFound := 0
+
+	for _, card := range playerHand {
+		handValues = append(handValues, p.GetValueOfCards(card.Value))
+	}
+
+	for _, card := range tableCards {
+		tableValues = append(tableValues, p.GetValueOfCards(card.Value))
+	}
+
+	// Confere se não tem um par na mão
+	if handValues[0] == handValues[1] {
+		pairsFound++
+	}
+
+	// Confere se não tem um par na mão compondo com a mesa
+
+	for _, handValue := range handValues {
+		for _, tableValue := range tableValues {
+			if handValue == tableValue {
+				pairsFound++
+			}
+		}
+	}
+
+	return pairsFound >= 2
+}
+
 func (p *Poker) GetValueOfCards(value string) int {
 	response, _ := strconv.Atoi(value)
 	switch value {

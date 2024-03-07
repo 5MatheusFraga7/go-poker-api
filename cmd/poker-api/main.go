@@ -47,6 +47,10 @@ func main() {
 		fmt.Println("sem par!")
 	}
 
+	if poker.CheckTwoPairs(playerHand, tableCards) {
+		fmt.Println("tEMOS DOIS PARES!")
+	}
+
 	log.Printf(fmt.Sprintf("Server is running in %s:%s", config.Host, config.Port))
 	log.Fatal(server.ListenAndServe())
 
