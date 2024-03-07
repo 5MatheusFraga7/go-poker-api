@@ -89,7 +89,7 @@ func (p *Poker) GetWinner() {
 	plays := []Play{}
 
 	for _, player := range players {
-		weight, greaterCard := CheckPlay(player.Hand, tableCards)
+		weight, greaterCard := p.CheckPlay(player.Hand, tableCards)
 		plays = append(plays, Play{Player: player, Weight: weight, GreaterCard: greaterCard})
 	}
 
@@ -107,26 +107,47 @@ func (p *Poker) GetWinner() {
 
 	// cards := p.CardsInGame
 }
-func CheckPlay(playerHand []Card, tableCards []Card) (int, Card) {
+func (p *Poker) CheckPlay(playerHand []Card, tableCards []Card) (int, Card) {
 
-	CheckPair(playerHand, tableCards)
+	p.CheckPair(playerHand, tableCards)
 
 	return 10, Card{}
 }
 
-func CheckPair(playerHand []Card, tableCards []Card) bool {
-	// combinations := GetPokerCombinations()
+// CheckPair verifica se o jogador possui um par na mão ou com as cartas da mesa
 
+func (p *Poker) CheckPair(playerHand []Card, tableCards []Card) bool {
 	handValues := []int{}
+	tableValues := []int{}
 
 	for _, card := range playerHand {
-		handValues = append(handValues, GetValueOfCards(card.Value))
+		handValues = append(handValues, p.GetValueOfCards(card.Value))
+	}
+
+	for _, card := range tableCards {
+		tableValues = append(tableValues, p.GetValueOfCards(card.Value))
+	}
+
+	// Confere se não tem um par na mão
+
+	if handValues[0] == handValues[1] {
+		return true
+	}
+
+	// Confere se não tem um par na mão compondo com a mesa
+
+	for _, handValue := range handValues {
+		for _, tableValue := range tableValues {
+			if handValue == tableValue {
+				return true
+			}
+		}
 	}
 
 	return false
 }
 
-func GetValueOfCards(value string) int {
+func (p *Poker) GetValueOfCards(value string) int {
 	response, _ := strconv.Atoi(value)
 	switch value {
 	case "Ás":
@@ -142,7 +163,7 @@ func GetValueOfCards(value string) int {
 	}
 }
 
-func GetPokerCombinations() []Combination {
+func (p *Poker) GetPokerCombinations() []Combination {
 	combinations := []Combination{
 		{Name: "One Pair", Weight: 1},
 		{Name: "Two Pairs", Weight: 2},

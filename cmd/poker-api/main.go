@@ -21,14 +21,30 @@ func main() {
 	poker.SetCardPlayers()
 
 	fmt.Println("==============")
-	fmt.Println("Players Hands:")
+	fmt.Println("Players Hand:")
 	fmt.Println("==============")
-	for _, player := range poker.Players {
-		fmt.Println("%s", player.Name)
-		for _, card := range player.Hand {
-			fmt.Println(card.Value+" de ", card.Suit)
-		}
-		fmt.Println("==============")
+
+	playerHand := poker.GetPlayerHand()
+
+	for _, card := range playerHand {
+		fmt.Println(card.Value+" de ", card.Suit)
+	}
+
+	fmt.Println("==============")
+	fmt.Println("Table Cards:")
+	fmt.Println("==============")
+
+	tableCards := poker.GetTableCards()
+
+	for _, card := range tableCards {
+		fmt.Println(card.Value+" de ", card.Suit)
+	}
+	fmt.Println("==============")
+
+	if poker.CheckPair(playerHand, tableCards) {
+		fmt.Println("tEMOS UM PAR!")
+	} else {
+		fmt.Println("sem par!")
 	}
 
 	log.Printf(fmt.Sprintf("Server is running in %s:%s", config.Host, config.Port))
