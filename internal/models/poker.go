@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 )
 
@@ -147,6 +148,8 @@ func (p *Poker) CheckPair(playerHand []Card, tableCards []Card) bool {
 	return false
 }
 
+// CheckTwoPairs verifica se o jogador possui 2 pares
+
 func (p *Poker) CheckTwoPairs(playerHand []Card, tableCards []Card) bool {
 	handValues := []int{}
 	tableValues := []int{}
@@ -175,7 +178,46 @@ func (p *Poker) CheckTwoPairs(playerHand []Card, tableCards []Card) bool {
 		}
 	}
 
-	return pairsFound >= 2
+	return pairsFound == 2
+}
+
+func (p *Poker) CheckThreeOfKind(playerHand []Card, tableCards []Card) bool {
+	allValues := []int{}
+	combinationFound := false
+
+	for _, card := range playerHand {
+		allValues = append(allValues, p.GetValueOfCards(card.Value))
+	}
+
+	for _, card := range tableCards {
+		allValues = append(allValues, p.GetValueOfCards(card.Value))
+	}
+
+	sort.Ints(allValues)
+	fmt.Println("Cartas em jogo: ", allValues)
+
+	for i := 0; i <= len(allValues)-3; i++ {
+		if allValues[i] == allValues[i+1] && allValues[i+1] == allValues[i+2] {
+			combinationFound = true
+		}
+	}
+
+	return combinationFound
+}
+
+func (p *Poker) GetPokerCombinations() []Combination {
+	combinations := []Combination{
+		{Name: "One Pair", Weight: 1},
+		{Name: "Two Pairs", Weight: 2},
+		{Name: "Three of a Kind", Weight: 3},
+		{Name: "Straight", Weight: 4},
+		{Name: "Flush", Weight: 5},
+		{Name: "Full House", Weight: 6},
+		{Name: "Quadra", Weight: 7},
+		{Name: "Straight Flush", Weight: 8},
+		{Name: "Royal Flush", Weight: 9},
+	}
+	return combinations
 }
 
 func (p *Poker) GetValueOfCards(value string) int {
@@ -192,21 +234,6 @@ func (p *Poker) GetValueOfCards(value string) int {
 	default:
 		return response
 	}
-}
-
-func (p *Poker) GetPokerCombinations() []Combination {
-	combinations := []Combination{
-		{Name: "One Pair", Weight: 1},
-		{Name: "Two Pairs", Weight: 2},
-		{Name: "Three of a Kind", Weight: 3},
-		{Name: "Straight", Weight: 4},
-		{Name: "Flush", Weight: 5},
-		{Name: "Full House", Weight: 6},
-		{Name: "Quadra", Weight: 7},
-		{Name: "Straight Flush", Weight: 8},
-		{Name: "Royal Flush", Weight: 9},
-	}
-	return combinations
 }
 
 // Retorna o desempate

@@ -47,8 +47,8 @@ func main() {
 		fmt.Println("sem par!")
 	}
 
-	if poker.CheckTwoPairs(playerHand, tableCards) {
-		fmt.Println("tEMOS DOIS PARES!")
+	if poker.CheckThreeOfKind(playerHand, tableCards) {
+		fmt.Println("tEMOS uma TRINCA!!!")
 	}
 
 	log.Printf(fmt.Sprintf("Server is running in %s:%s", config.Host, config.Port))
