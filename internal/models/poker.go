@@ -181,7 +181,34 @@ func (p *Poker) CheckTwoPairs(playerHand []Card, tableCards []Card) bool {
 	return pairsFound == 2
 }
 
+// CheckThreeOfKind verifica se o jogador possui uma trinca
+
 func (p *Poker) CheckThreeOfKind(playerHand []Card, tableCards []Card) bool {
+	allValues := []int{}
+	combinationFound := false
+
+	for _, card := range playerHand {
+		allValues = append(allValues, p.GetValueOfCards(card.Value))
+	}
+
+	for _, card := range tableCards {
+		allValues = append(allValues, p.GetValueOfCards(card.Value))
+	}
+
+	sort.Ints(allValues)
+
+	for i := 0; i <= len(allValues)-3; i++ {
+		if allValues[i] == allValues[i+1] && allValues[i+1] == allValues[i+2] {
+			combinationFound = true
+		}
+	}
+
+	return combinationFound
+}
+
+// CheckStraight verifica se o jogador possui uma sequência
+
+func (p *Poker) CheckStraight(playerHand []Card, tableCards []Card) bool {
 	allValues := []int{}
 	combinationFound := false
 
@@ -196,13 +223,35 @@ func (p *Poker) CheckThreeOfKind(playerHand []Card, tableCards []Card) bool {
 	sort.Ints(allValues)
 	fmt.Println("Cartas em jogo: ", allValues)
 
-	for i := 0; i <= len(allValues)-3; i++ {
-		if allValues[i] == allValues[i+1] && allValues[i+1] == allValues[i+2] {
-			combinationFound = true
-		}
+	startValues := allValues[:5]
+	midValues := allValues[1:6]
+	lastValues := allValues[2:]
+
+	if isArithmeticSequence(startValues) {
+		return true
+	}
+
+	if isArithmeticSequence(midValues) {
+		return true
+	}
+
+	if isArithmeticSequence(lastValues) {
+		return true
 	}
 
 	return combinationFound
+}
+
+func isArithmeticSequence(sequence []int) bool {
+	difference := sequence[1] - sequence[0]
+
+	for i := 1; i < len(sequence)-1; i++ {
+		if sequence[i+1]-sequence[i] != difference {
+			return false
+		}
+	}
+
+	return true
 }
 
 func (p *Poker) GetPokerCombinations() []Combination {

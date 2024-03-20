@@ -51,6 +51,10 @@ func main() {
 		fmt.Println("tEMOS uma TRINCA!!!")
 	}
 
+	if poker.CheckStraight(playerHand, tableCards) {
+		fmt.Println("tEMOS uma SEQUENCIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!")
+	}
+
 	log.Printf(fmt.Sprintf("Server is running in %s:%s", config.Host, config.Port))
 	log.Fatal(server.ListenAndServe())
 
