@@ -65,7 +65,9 @@ func runProgram() {
 		fmt.Println("tEMOS uma TRINCA!!!")
 	}
 
-	if poker.CheckStraight(playerHand, tableCards) {
+	checkStraight, _ := poker.CheckStraight(playerHand, tableCards)
+
+	if checkStraight {
 		fmt.Println("tEMOS uma SEQUENCIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA!!!")
 	}
 
