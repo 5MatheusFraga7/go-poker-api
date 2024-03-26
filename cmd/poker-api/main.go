@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
 
 func main() {
@@ -17,6 +18,16 @@ func main() {
 		Handler: router,
 	}
 
+	for {
+		runProgram()
+		time.Sleep(1 * time.Second) // Espera 2 segundos antes de executar novamente
+	}
+
+	log.Printf(fmt.Sprintf("Server is running in %s:%s", config.Host, config.Port))
+	log.Fatal(server.ListenAndServe())
+}
+
+func runProgram() {
 	poker := models.Poker{Deck: models.NewDeck()}
 	poker.SetCardPlayers()
 
@@ -41,13 +52,16 @@ func main() {
 	}
 	fmt.Println("==============")
 
-	if poker.CheckPair(playerHand, tableCards) {
+	checkPair, _ := poker.CheckPair(playerHand, tableCards)
+
+	if checkPair {
 		fmt.Println("tEMOS UM PAR!")
 	} else {
 		fmt.Println("sem par!")
 	}
+	checkThreeOfKind, _ := poker.CheckThreeOfKind(playerHand, tableCards)
 
-	if poker.CheckThreeOfKind(playerHand, tableCards) {
+	if checkThreeOfKind {
 		fmt.Println("tEMOS uma TRINCA!!!")
 	}
 
@@ -59,7 +73,7 @@ func main() {
 		fmt.Println("tEMOS um FLUUUUSHHH!!!!!!!!")
 	}
 
-	log.Printf(fmt.Sprintf("Server is running in %s:%s", config.Host, config.Port))
-	log.Fatal(server.ListenAndServe())
-
+	if poker.CheckFullHouse(playerHand, tableCards) {
+		fmt.Println("tEMOS um FULL HOUSE !!!!!!!!")
+	}
 }

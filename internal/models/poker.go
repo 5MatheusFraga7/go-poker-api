@@ -117,7 +117,7 @@ func (p *Poker) CheckPlay(playerHand []Card, tableCards []Card) (int, Card) {
 
 // CheckPair verifica se o jogador possui um par na mão ou com as cartas da mesa
 
-func (p *Poker) CheckPair(playerHand []Card, tableCards []Card) bool {
+func (p *Poker) CheckPair(playerHand []Card, tableCards []Card) (bool, int) {
 	handValues := []int{}
 	tableValues := []int{}
 
@@ -132,7 +132,7 @@ func (p *Poker) CheckPair(playerHand []Card, tableCards []Card) bool {
 	// Confere se não tem um par na mão
 
 	if handValues[0] == handValues[1] {
-		return true
+		return true, handValues[0]
 	}
 
 	// Confere se não tem um par na mão compondo com a mesa
@@ -140,12 +140,12 @@ func (p *Poker) CheckPair(playerHand []Card, tableCards []Card) bool {
 	for _, handValue := range handValues {
 		for _, tableValue := range tableValues {
 			if handValue == tableValue {
-				return true
+				return true, handValue
 			}
 		}
 	}
 
-	return false
+	return true, 0
 }
 
 // CheckTwoPairs verifica se o jogador possui 2 pares
@@ -183,9 +183,11 @@ func (p *Poker) CheckTwoPairs(playerHand []Card, tableCards []Card) bool {
 
 // CheckThreeOfKind verifica se o jogador possui uma trinca
 
-func (p *Poker) CheckThreeOfKind(playerHand []Card, tableCards []Card) bool {
+func (p *Poker) CheckThreeOfKind(playerHand []Card, tableCards []Card) (bool, int) {
 	allValues := []int{}
 	combinationFound := false
+
+	foundedValue := 0
 
 	for _, card := range playerHand {
 		allValues = append(allValues, p.GetValueOfCards(card.Value))
@@ -200,10 +202,11 @@ func (p *Poker) CheckThreeOfKind(playerHand []Card, tableCards []Card) bool {
 	for i := 0; i <= len(allValues)-3; i++ {
 		if allValues[i] == allValues[i+1] && allValues[i+1] == allValues[i+2] {
 			combinationFound = true
+			foundedValue = allValues[i]
 		}
 	}
 
-	return combinationFound
+	return combinationFound, foundedValue
 }
 
 // CheckStraight verifica se o jogador possui uma sequência
@@ -294,6 +297,21 @@ func (p *Poker) CheckFlush(playerHand []Card, tableCards []Card) bool {
 	}
 
 	return combinationFound
+}
+
+// CheckFlush verifica se o jogador possui um full house
+
+func (p *Poker) CheckFullHouse(playerHand []Card, tableCards []Card) bool {
+
+	hasPair, valuePairFound := p.CheckPair(playerHand, tableCards)
+	hasThreeOfKind, valueThreeOfKindFound := p.CheckThreeOfKind(playerHand, tableCards)
+
+	fmt.Println("Par encontrado em jogo: ", valuePairFound)
+	fmt.Println("TRinca encontrado em jogo: ", valueThreeOfKindFound)
+
+	bothValuesBiggerThanZero := valuePairFound > 0 && valueThreeOfKindFound > 0
+
+	return hasPair && hasThreeOfKind && valuePairFound != valueThreeOfKindFound && bothValuesBiggerThanZero
 }
 
 func isArithmeticSequence(sequence []int) bool {
