@@ -242,6 +242,60 @@ func (p *Poker) CheckStraight(playerHand []Card, tableCards []Card) bool {
 	return combinationFound
 }
 
+// CheckFlush verifica se o jogador possui um flush
+
+func (p *Poker) CheckFlush(playerHand []Card, tableCards []Card) bool {
+	allSuits := []string{}
+	startCombinationFound := false
+	midCombinationFound := false
+	lastCombinationFound := false
+
+	combinationFound := false
+
+	for _, card := range playerHand {
+		allSuits = append(allSuits, card.Suit)
+	}
+
+	for _, card := range tableCards {
+		allSuits = append(allSuits, card.Suit)
+	}
+	sort.Strings(allSuits)
+
+	startValues := allSuits[:5]
+	midValues := allSuits[1:6]
+	lastValues := allSuits[2:]
+
+	fmt.Println("Naipes em jogo: ", allSuits)
+
+	for i := 0; i < len(startValues); i++ {
+		if startValues[0] != startValues[i] {
+			startCombinationFound = false
+		}
+	}
+
+	for i := 0; i < len(midValues); i++ {
+		if startValues[0] != midValues[i] {
+			midCombinationFound = false
+		}
+	}
+
+	for i := 0; i < len(lastValues); i++ {
+		if startValues[0] != lastValues[i] {
+			lastCombinationFound = false
+		}
+	}
+
+	if startCombinationFound {
+		combinationFound = true
+	} else if midCombinationFound {
+		combinationFound = true
+	} else if lastCombinationFound {
+		combinationFound = true
+	}
+
+	return combinationFound
+}
+
 func isArithmeticSequence(sequence []int) bool {
 	difference := sequence[1] - sequence[0]
 
