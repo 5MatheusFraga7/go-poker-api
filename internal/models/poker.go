@@ -299,7 +299,7 @@ func (p *Poker) CheckFlush(playerHand []Card, tableCards []Card) bool {
 	return combinationFound
 }
 
-// CheckFlush verifica se o jogador possui um full house
+// CheckFullHouse verifica se o jogador possui um full house
 
 func (p *Poker) CheckFullHouse(playerHand []Card, tableCards []Card) bool {
 
@@ -312,6 +312,35 @@ func (p *Poker) CheckFullHouse(playerHand []Card, tableCards []Card) bool {
 	bothValuesBiggerThanZero := valuePairFound > 0 && valueThreeOfKindFound > 0
 
 	return hasPair && hasThreeOfKind && valuePairFound != valueThreeOfKindFound && bothValuesBiggerThanZero
+}
+
+// CheckFourOfKind verifica se o jogador possui uma quadra
+
+func (p *Poker) CheckFourOfKind(playerHand []Card, tableCards []Card) bool {
+	allValues := []int{}
+	combinationFound := false
+
+	// Adiciona os valores das cartas da mão do jogador ao slice allValues
+	for _, card := range playerHand {
+		allValues = append(allValues, p.GetValueOfCards(card.Value))
+	}
+
+	// Adiciona os valores das cartas da mesa ao slice allValues
+	for _, card := range tableCards {
+		allValues = append(allValues, p.GetValueOfCards(card.Value))
+	}
+
+	sort.Ints(allValues)
+
+	for i := 0; i <= len(allValues)-4; i++ {
+		// Verifica se os valores de 4 cartas consecutivas são iguais
+		if allValues[i] == allValues[i+1] && allValues[i] == allValues[i+2] && allValues[i] == allValues[i+3] {
+			combinationFound = true
+			break // Sai do loop, já que encontramos uma quadra
+		}
+	}
+
+	return combinationFound
 }
 
 func isArithmeticSequence(sequence []int) bool {

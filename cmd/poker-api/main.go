@@ -76,4 +76,9 @@ func runProgram() {
 	if poker.CheckFullHouse(playerHand, tableCards) {
 		fmt.Println("tEMOS um FULL HOUSE !!!!!!!!")
 	}
+
+	if poker.CheckFourOfKind(playerHand, tableCards) {
+		fmt.Println("tEMOS um FOUR OF KIND !!!!!!!!")
+	}
+
 }
