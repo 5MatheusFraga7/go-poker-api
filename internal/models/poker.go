@@ -211,7 +211,7 @@ func (p *Poker) CheckThreeOfKind(playerHand []Card, tableCards []Card) (bool, in
 
 // CheckStraight verifica se o jogador possui uma sequência
 
-func (p *Poker) CheckStraight(playerHand []Card, tableCards []Card) (bool, int) {
+func (p *Poker) CheckStraight(playerHand []Card, tableCards []Card) (bool, []int) {
 	allValues := []int{}
 	combinationFound := false
 
@@ -231,18 +231,18 @@ func (p *Poker) CheckStraight(playerHand []Card, tableCards []Card) (bool, int) 
 	lastValues := allValues[2:]
 
 	if isArithmeticSequence(startValues) {
-		return true, startValues[0]
+		return true, startValues
 	}
 
 	if isArithmeticSequence(midValues) {
-		return true, midValues[0]
+		return true, midValues
 	}
 
 	if isArithmeticSequence(lastValues) {
-		return true, lastValues[0]
+		return true, lastValues
 	}
 
-	return combinationFound, 0
+	return combinationFound, nil
 }
 
 // CheckFlush verifica se o jogador possui um flush
@@ -346,30 +346,51 @@ func (p *Poker) CheckFourOfKind(playerHand []Card, tableCards []Card) bool {
 // CheckStraightFlush verifica se o jogador possui uma StraightFlush
 
 func (p *Poker) CheckStraightFlush(playerHand []Card, tableCards []Card) bool {
-	hasStraigth, foundedValue := p.CheckStraight(playerHand, tableCards)
-	suitCounter := 0
-	cardsToCheck := []Card{}
+	hasStraight, foundedValues := p.CheckStraight(playerHand, tableCards)
 
-	if hasStraigth {
-		for _, card := range playerHand {
-			if p.GetValueOfCards(card.Value) == foundedValue {
-				cardsToCheck = append(cardsToCheck, card)
-			}
-		}
-
-		for _, card := range tableCards {
-			cardsToCheck = append(cardsToCheck, card)
-		}
-
-		for i := 0; i < len(cardsToCheck); i++ {
-			if cardsToCheck[i].Suit == cardsToCheck[0].Suit {
-				suitCounter++
-			}
-		}
-
+	if !hasStraight {
+		return false
 	}
 
-	return suitCounter >= 5
+	for _, value := range foundedValues {
+		valueSuitCounter := 0
+
+		for _, card := range append(playerHand, tableCards...) {
+			if p.GetValueOfCards(card.Value) == value && card.Suit == playerHand[0].Suit {
+				valueSuitCounter++
+			}
+		}
+
+		if valueSuitCounter == 5 {
+			return true
+		}
+	}
+
+	return false
+}
+
+// CheckRoyalFlush verifica se o jogador possui uma RoyalFlush
+
+func (p *Poker) CheckRoyalFlush(playerHand []Card, tableCards []Card) bool {
+	hasStraight, foundedValues := p.CheckStraight(playerHand, tableCards)
+
+	if !hasStraight {
+		return false
+	}
+
+	hasStraightFlush := p.CheckStraightFlush(playerHand, tableCards)
+
+	if !hasStraightFlush {
+		return false
+	}
+
+	for i := 10; i <= 14; i++ {
+		if foundedValues[i] != i {
+			return false
+		}
+	}
+
+	return true
 }
 
 func isArithmeticSequence(sequence []int) bool {
