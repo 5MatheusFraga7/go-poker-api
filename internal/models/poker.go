@@ -37,12 +37,14 @@ type Combination struct {
 	Weight int
 }
 
-func (p *Poker) SetCardPlayers() {
+func (p *Poker) SetCardPlayers(playerNumbers int) {
+
+	p.Deck = NewDeck()
 
 	displayPokerCards := DisplayPokerCards{PlayerHand: p.GetPlayerHand(), MachineHands: p.GetMachineHands(), TableCards: p.GetTableCards()}
 
-	for i := 1; i <= 4; i++ {
-		p.Players = append(p.Players, Player{Name: fmt.Sprintf("Player %d", i+1), Hand: displayPokerCards.MachineHands[:2]})
+	for i := 1; i < playerNumbers; i++ {
+		p.Players = append(p.Players, Player{Id: strconv.Itoa(i), Name: fmt.Sprintf("Player %d", i+1), Hand: displayPokerCards.MachineHands[:2]})
 		displayPokerCards.MachineHands = displayPokerCards.MachineHands[2:]
 	}
 
@@ -115,8 +117,6 @@ func (p *Poker) CheckPlay(playerHand []Card, tableCards []Card) (int, Card) {
 	return 10, Card{}
 }
 
-// CheckPair verifica se o jogador possui um par na mão ou com as cartas da mesa
-
 func (p *Poker) CheckPair(playerHand []Card, tableCards []Card) (bool, int) {
 	handValues := []int{}
 	tableValues := []int{}
@@ -147,8 +147,6 @@ func (p *Poker) CheckPair(playerHand []Card, tableCards []Card) (bool, int) {
 
 	return true, 0
 }
-
-// CheckTwoPairs verifica se o jogador possui 2 pares
 
 func (p *Poker) CheckTwoPairs(playerHand []Card, tableCards []Card) bool {
 	handValues := []int{}
@@ -181,8 +179,6 @@ func (p *Poker) CheckTwoPairs(playerHand []Card, tableCards []Card) bool {
 	return pairsFound == 2
 }
 
-// CheckThreeOfKind verifica se o jogador possui uma trinca
-
 func (p *Poker) CheckThreeOfKind(playerHand []Card, tableCards []Card) (bool, int) {
 	allValues := []int{}
 	combinationFound := false
@@ -208,8 +204,6 @@ func (p *Poker) CheckThreeOfKind(playerHand []Card, tableCards []Card) (bool, in
 
 	return combinationFound, foundedValue
 }
-
-// CheckStraight verifica se o jogador possui uma sequência
 
 func (p *Poker) CheckStraight(playerHand []Card, tableCards []Card) (bool, []int) {
 	allValues := []int{}
@@ -244,8 +238,6 @@ func (p *Poker) CheckStraight(playerHand []Card, tableCards []Card) (bool, []int
 
 	return combinationFound, nil
 }
-
-// CheckFlush verifica se o jogador possui um flush
 
 func (p *Poker) CheckFlush(playerHand []Card, tableCards []Card) bool {
 	allSuits := []string{}
@@ -299,8 +291,6 @@ func (p *Poker) CheckFlush(playerHand []Card, tableCards []Card) bool {
 	return combinationFound
 }
 
-// CheckFullHouse verifica se o jogador possui um full house
-
 func (p *Poker) CheckFullHouse(playerHand []Card, tableCards []Card) bool {
 
 	hasPair, valuePairFound := p.CheckPair(playerHand, tableCards)
@@ -313,8 +303,6 @@ func (p *Poker) CheckFullHouse(playerHand []Card, tableCards []Card) bool {
 
 	return hasPair && hasThreeOfKind && valuePairFound != valueThreeOfKindFound && bothValuesBiggerThanZero
 }
-
-// CheckFourOfKind verifica se o jogador possui uma quadra
 
 func (p *Poker) CheckFourOfKind(playerHand []Card, tableCards []Card) bool {
 	allValues := []int{}
@@ -343,8 +331,6 @@ func (p *Poker) CheckFourOfKind(playerHand []Card, tableCards []Card) bool {
 	return combinationFound
 }
 
-// CheckStraightFlush verifica se o jogador possui uma StraightFlush
-
 func (p *Poker) CheckStraightFlush(playerHand []Card, tableCards []Card) bool {
 	hasStraight, foundedValues := p.CheckStraight(playerHand, tableCards)
 
@@ -368,8 +354,6 @@ func (p *Poker) CheckStraightFlush(playerHand []Card, tableCards []Card) bool {
 
 	return false
 }
-
-// CheckRoyalFlush verifica se o jogador possui uma RoyalFlush
 
 func (p *Poker) CheckRoyalFlush(playerHand []Card, tableCards []Card) bool {
 	hasStraight, foundedValues := p.CheckStraight(playerHand, tableCards)

@@ -1,7 +1,8 @@
 package routes
 
 import (
-	"encoding/json"
+	"example/internal/api/handlers"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -9,30 +10,25 @@ import (
 
 func SetupRouter() http.Handler {
 	router := mux.NewRouter()
-	router.HandleFunc("/", HomeFunc).Methods("GET")
+	router.Use(LoggerMiddleware)
+	router.NotFoundHandler = http.HandlerFunc(HandleNotFound)
+	p := handlers.PokerHandler{}
+
+	// Routes
+	router.HandleFunc("/get_new_round", p.NewRound).Methods("GET")
 
 	return router
 }
 
-func HomeFunc(w http.ResponseWriter, r *http.Request) {
-	data := map[string]string{
-		"mensagem": "Olá, mundooooooooooooooooo!",
-	}
+func LoggerMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("Recebida solicitação para %s %s com parâmetros %v", r.Method, r.URL.Path, r.URL.Query())
 
-	// Convertendo o mapa para JSON
-	jsonData, err := json.Marshal(data)
-	if err != nil {
-		http.Error(w, "Erro ao gerar JSON", http.StatusInternalServerError)
-		return
-	}
+		next.ServeHTTP(w, r)
+	})
+}
 
-	// Definindo o cabeçalho Content-Type como application/json
-	w.Header().Set("Content-Type", "application/json")
-
-	// Escrevendo o JSON na resposta
-	_, err = w.Write(jsonData)
-	if err != nil {
-		http.Error(w, "Erro ao escrever resposta", http.StatusInternalServerError)
-		return
-	}
+func HandleNotFound(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Solicitação não encontrada para %s %s", r.Method, r.URL.Path)
+	http.Error(w, "Endpoint não encontrado", http.StatusNotFound)
 }
