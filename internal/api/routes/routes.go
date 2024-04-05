@@ -16,6 +16,7 @@ func SetupRouter() http.Handler {
 
 	// Routes
 	router.HandleFunc("/get_new_round", p.NewRound).Methods("GET")
+	router.HandleFunc("/get_winner", p.GetWinner).Methods("POST")
 
 	return router
 }

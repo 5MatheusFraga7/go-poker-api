@@ -37,6 +37,11 @@ type Combination struct {
 	Weight int
 }
 
+type PokerData struct {
+	Players    []Player `json:"players"`
+	TableCards []Card   `json:"tableCards"`
+}
+
 func (p *Poker) SetCardPlayers(playerNumbers int) {
 
 	p.Deck = NewDeck()
@@ -44,7 +49,7 @@ func (p *Poker) SetCardPlayers(playerNumbers int) {
 	displayPokerCards := DisplayPokerCards{PlayerHand: p.GetPlayerHand(), MachineHands: p.GetMachineHands(), TableCards: p.GetTableCards()}
 
 	for i := 1; i < playerNumbers; i++ {
-		p.Players = append(p.Players, Player{Id: strconv.Itoa(i), Name: fmt.Sprintf("Player %d", i+1), Hand: displayPokerCards.MachineHands[:2]})
+		p.Players = append(p.Players, Player{Id: fmt.Sprintf("%d", i+1), Name: fmt.Sprintf("Player %d", i+1), Hand: displayPokerCards.MachineHands[:2]})
 		displayPokerCards.MachineHands = displayPokerCards.MachineHands[2:]
 	}
 
@@ -85,6 +90,10 @@ func (p *Poker) RemoveAvailablePlayer(playerIndex int) {
 }
 
 func (p *Poker) GetWinner() {
+
+	// IMPLEMENTAR AQUI A FINALIZAÇÃO DO MÉTODO GET WINNER
+	// ESSE MEODDO DEVE RECEBR OS PLAYERS CARDS E A TABLE CARDS
+	// CONFERIR AS COMBINAÇÕES DE CADA UM E VER QUEM TEVE A MELHOR COMBINAÇÃO
 
 	players := p.AvailablePlayers
 	tableCards := p.TableCards
