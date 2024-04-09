@@ -104,11 +104,11 @@ func (p *Poker) GetWinner() {
 	}
 
 	for _, play := range plays {
-		log.Println("==================")
+		log.Println("========================================")
 		log.Println("Nome do jogador: " + play.Player.Name)
 		log.Println("Combinação: " + play.Combination.Name)
 		log.Println("Peso da combinação " + strconv.Itoa(play.Combination.Weight))
-		log.Println("Carta maior: " + play.GreaterCard.Value + " de " + play.GreaterCard.Suit)
+		log.Println("========================================")
 	}
 
 	// DESENVOLVER A LÓGICA DO DESEMPATE
@@ -128,14 +128,49 @@ func (p *Poker) GetWinner() {
 }
 func (p *Poker) CheckPlay(playerHand []Card, tableCards []Card) (Combination, Card) {
 
-	// lembrar de fazer função que reotnra A carta maior
+	// lembrar de fazer função que retorna a carta maior
+
+	log.Println("Jogador: ")
 
 	hasPair, _ := p.CheckPair(playerHand, tableCards)
+	hasTwoPair := p.CheckTwoPairs(playerHand, tableCards)
+	hasThreeOfKind, _ := p.CheckThreeOfKind(playerHand, tableCards)
+	hasStraight, _ := p.CheckStraight(playerHand, tableCards)
+	hasFlush := p.CheckFlush(playerHand, tableCards)
+	hasFullHouse := p.CheckFullHouse(playerHand, tableCards)
+	hasFourOfKind := p.CheckFourOfKind(playerHand, tableCards)
+	hasRoyalFlush := p.CheckRoyalFlush(playerHand, tableCards)
 
-	if hasPair {
+	if hasFlush {
+		log.Println("**********TEMOS UM FLUSH********")
+	}
+
+	if hasPair && !hasTwoPair {
 		return Combination{Name: "Par", Weight: 1}, Card{}
 	}
-	return Combination{Name: "NADA POR ENQUATNO", Weight: 0}, Card{}
+	if hasTwoPair && !hasThreeOfKind {
+		return Combination{Name: "Dois Pares", Weight: 2}, Card{}
+	}
+	if hasThreeOfKind && !hasFourOfKind {
+		return Combination{Name: "Trinca", Weight: 3}, Card{}
+	}
+	if hasStraight {
+		return Combination{Name: "Sequencia", Weight: 4}, Card{}
+	}
+	if hasFlush {
+		return Combination{Name: "Flush", Weight: 5}, Card{}
+	}
+	if hasFullHouse {
+		return Combination{Name: "Full House", Weight: 6}, Card{}
+	}
+	if hasFourOfKind {
+		return Combination{Name: "Quadra", Weight: 7}, Card{}
+	}
+	if hasRoyalFlush {
+		return Combination{Name: "Royal Flush", Weight: 8}, Card{}
+	}
+
+	return Combination{Name: "Nada", Weight: 0}, Card{}
 }
 
 func (p *Poker) CheckPair(playerHand []Card, tableCards []Card) (bool, int) {
@@ -166,7 +201,7 @@ func (p *Poker) CheckPair(playerHand []Card, tableCards []Card) (bool, int) {
 		}
 	}
 
-	return true, 0
+	return false, 0
 }
 
 func (p *Poker) CheckTwoPairs(playerHand []Card, tableCards []Card) bool {
@@ -262,9 +297,9 @@ func (p *Poker) CheckStraight(playerHand []Card, tableCards []Card) (bool, []int
 
 func (p *Poker) CheckFlush(playerHand []Card, tableCards []Card) bool {
 	allSuits := []string{}
-	startCombinationFound := false
-	midCombinationFound := false
-	lastCombinationFound := false
+	startCombinationFound := true
+	midCombinationFound := true
+	lastCombinationFound := true
 
 	combinationFound := false
 
@@ -281,7 +316,8 @@ func (p *Poker) CheckFlush(playerHand []Card, tableCards []Card) bool {
 	midValues := allSuits[1:6]
 	lastValues := allSuits[2:]
 
-	fmt.Println("Naipes em jogo: ", allSuits)
+	log.Println("Naipes em jogo: ", allSuits)
+	log.Println("startValues: ", startValues)
 
 	for i := 0; i < len(startValues); i++ {
 		if startValues[0] != startValues[i] {
