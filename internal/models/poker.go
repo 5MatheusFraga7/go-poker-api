@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"log"
 	"sort"
 	"strconv"
 )
@@ -28,8 +29,8 @@ type DisplayPokerCards struct {
 
 type Play struct {
 	Player      Player
-	Weight      int
 	GreaterCard Card
+	Combination Combination
 }
 
 type Combination struct {
@@ -91,39 +92,50 @@ func (p *Poker) RemoveAvailablePlayer(playerIndex int) {
 
 func (p *Poker) GetWinner() {
 
-	// IMPLEMENTAR AQUI A FINALIZAÇÃO DO MÉTODO GET WINNER
-	// ESSE MEODDO DEVE RECEBR OS PLAYERS CARDS E A TABLE CARDS
-	// CONFERIR AS COMBINAÇÕES DE CADA UM E VER QUEM TEVE A MELHOR COMBINAÇÃO
-
 	players := p.AvailablePlayers
 	tableCards := p.TableCards
 
 	plays := []Play{}
 
 	for _, player := range players {
-		weight, greaterCard := p.CheckPlay(player.Hand, tableCards)
-		plays = append(plays, Play{Player: player, Weight: weight, GreaterCard: greaterCard})
-	}
+		combination, greaterCard := p.CheckPlay(player.Hand, tableCards)
+		plays = append(plays, Play{Player: player, Combination: combination, GreaterCard: greaterCard})
 
-	maxPlay := plays[0]
-	plays = plays[1:]
+	}
 
 	for _, play := range plays {
-		if play.Weight > maxPlay.Weight {
-			maxPlay = play
-		}
-		if play.Weight == maxPlay.Weight {
-			maxPlay = CheckTieBreak(maxPlay, play)
-		}
+		log.Println("==================")
+		log.Println("Nome do jogador: " + play.Player.Name)
+		log.Println("Combinação: " + play.Combination.Name)
+		log.Println("Peso da combinação " + strconv.Itoa(play.Combination.Weight))
+		log.Println("Carta maior: " + play.GreaterCard.Value + " de " + play.GreaterCard.Suit)
 	}
+
+	// DESENVOLVER A LÓGICA DO DESEMPATE
+	// maxPlay := plays[0]
+	// plays = plays[1:]
+
+	// for _, play := range plays {
+	// 	if play.Weight > maxPlay.Weight {
+	// 		maxPlay = play
+	// 	}
+	// 	if play.Weight == maxPlay.Weight {
+	// 		maxPlay = CheckTieBreak(maxPlay, play)
+	// 	}
+	// }
 
 	// cards := p.CardsInGame
 }
-func (p *Poker) CheckPlay(playerHand []Card, tableCards []Card) (int, Card) {
+func (p *Poker) CheckPlay(playerHand []Card, tableCards []Card) (Combination, Card) {
 
-	p.CheckPair(playerHand, tableCards)
+	// lembrar de fazer função que reotnra A carta maior
 
-	return 10, Card{}
+	hasPair, _ := p.CheckPair(playerHand, tableCards)
+
+	if hasPair {
+		return Combination{Name: "Par", Weight: 1}, Card{}
+	}
+	return Combination{Name: "NADA POR ENQUATNO", Weight: 0}, Card{}
 }
 
 func (p *Poker) CheckPair(playerHand []Card, tableCards []Card) (bool, int) {

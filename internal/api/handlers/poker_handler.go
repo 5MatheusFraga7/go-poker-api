@@ -43,29 +43,21 @@ func (p *PokerHandler) NewRound(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func (p *PokerHandler) GetWinner(w http.ResponseWriter, r *http.Request) {
-	var pokerData models.PokerData
+	var data models.PokerData
+	var poker models.Poker
 
-	// Decodifica o JSON do corpo da solicitação para a struct PokerData
-
-	err := json.NewDecoder(r.Body).Decode(&pokerData)
+	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// ADICIONAR AQUI A CHAMDA PARA O MÉTDODO GET WINNER QUE AINDA NÃO FOI IMPLEMENTADO EM POKER.GO
+	poker.AvailablePlayers = data.Players
+	poker.TableCards = data.TableCards
 
-	// players := pokerData.Players
-	// tableCards := pokerData.TableCards
+	poker.GetWinner()
 
-	//gerando resposta
-
-	data := map[string]interface{}{
-		"players":    pokerData.Players,
-		"tableCards": pokerData.TableCards,
-	}
-	jsonData, err := json.Marshal(data)
-
-	w.Header().Set("Content-Type", "application/json")
-	_, err = w.Write(jsonData)
+	// Resposta de exemplo
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("JSON decodificado com sucesso"))
 }
