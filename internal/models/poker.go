@@ -130,8 +130,6 @@ func (p *Poker) CheckPlay(playerHand []Card, tableCards []Card) (Combination, Ca
 
 	// lembrar de fazer função que retorna a carta maior
 
-	log.Println("Jogador: ")
-
 	hasPair, _ := p.CheckPair(playerHand, tableCards)
 	hasTwoPair := p.CheckTwoPairs(playerHand, tableCards)
 	hasThreeOfKind, _ := p.CheckThreeOfKind(playerHand, tableCards)
@@ -141,17 +139,13 @@ func (p *Poker) CheckPlay(playerHand []Card, tableCards []Card) (Combination, Ca
 	hasFourOfKind := p.CheckFourOfKind(playerHand, tableCards)
 	hasRoyalFlush := p.CheckRoyalFlush(playerHand, tableCards)
 
-	if hasFlush {
-		log.Println("**********TEMOS UM FLUSH********")
-	}
-
-	if hasPair && !hasTwoPair {
+	if hasPair && !hasTwoPair && !hasThreeOfKind && !hasFourOfKind && !hasFullHouse {
 		return Combination{Name: "Par", Weight: 1}, Card{}
 	}
-	if hasTwoPair && !hasThreeOfKind {
+	if hasTwoPair && !hasThreeOfKind && !hasFourOfKind && !hasFullHouse {
 		return Combination{Name: "Dois Pares", Weight: 2}, Card{}
 	}
-	if hasThreeOfKind && !hasFourOfKind {
+	if hasThreeOfKind && !hasFourOfKind && !hasFullHouse {
 		return Combination{Name: "Trinca", Weight: 3}, Card{}
 	}
 	if hasStraight {
