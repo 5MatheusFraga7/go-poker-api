@@ -137,9 +137,10 @@ func (p *Poker) CheckPlay(playerHand []Card, tableCards []Card) (Combination, Ca
 	hasFlush := p.CheckFlush(playerHand, tableCards)
 	hasFullHouse := p.CheckFullHouse(playerHand, tableCards)
 	hasFourOfKind := p.CheckFourOfKind(playerHand, tableCards)
-	hasRoyalFlush := p.CheckRoyalFlush(playerHand, tableCards)
+	hasStraightFlush := p.CheckStraightFlush(playerHand, tableCards)
+	hasRoyalFlush := false
 
-	if hasPair && !hasTwoPair && !hasThreeOfKind && !hasFourOfKind && !hasFullHouse {
+	if hasPair && !hasTwoPair && !hasThreeOfKind && !hasFourOfKind && !hasFullHouse && !hasStraight {
 		return Combination{Name: "Par", Weight: 1}, Card{}
 	}
 	if hasTwoPair && !hasThreeOfKind && !hasFourOfKind && !hasFullHouse {
@@ -148,10 +149,10 @@ func (p *Poker) CheckPlay(playerHand []Card, tableCards []Card) (Combination, Ca
 	if hasThreeOfKind && !hasFourOfKind && !hasFullHouse {
 		return Combination{Name: "Trinca", Weight: 3}, Card{}
 	}
-	if hasStraight {
+	if hasStraight && !hasStraightFlush {
 		return Combination{Name: "Sequencia", Weight: 4}, Card{}
 	}
-	if hasFlush {
+	if hasFlush && !hasStraightFlush {
 		return Combination{Name: "Flush", Weight: 5}, Card{}
 	}
 	if hasFullHouse {
@@ -160,8 +161,11 @@ func (p *Poker) CheckPlay(playerHand []Card, tableCards []Card) (Combination, Ca
 	if hasFourOfKind {
 		return Combination{Name: "Quadra", Weight: 7}, Card{}
 	}
+	if hasStraightFlush && !hasRoyalFlush {
+		return Combination{Name: "Straight Flush", Weight: 8}, Card{}
+	}
 	if hasRoyalFlush {
-		return Combination{Name: "Royal Flush", Weight: 8}, Card{}
+		return Combination{Name: "Royal Flush", Weight: 9}, Card{}
 	}
 
 	return Combination{Name: "Nada", Weight: 0}, Card{}
@@ -389,20 +393,24 @@ func (p *Poker) CheckStraightFlush(playerHand []Card, tableCards []Card) bool {
 		return false
 	}
 
+	valueSuitCounter := 0
+
 	for _, value := range foundedValues {
-		valueSuitCounter := 0
 
 		for _, card := range append(playerHand, tableCards...) {
+
 			if p.GetValueOfCards(card.Value) == value && card.Suit == playerHand[0].Suit {
+
 				valueSuitCounter++
+
 			}
 		}
 
-		if valueSuitCounter == 5 {
+		if valueSuitCounter >= 5 {
+
 			return true
 		}
 	}
-
 	return false
 }
 
