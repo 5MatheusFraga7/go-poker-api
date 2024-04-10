@@ -90,7 +90,7 @@ func (p *Poker) RemoveAvailablePlayer(playerIndex int) {
 	p.AvailablePlayers = append(p.AvailablePlayers[:playerIndex], p.AvailablePlayers[playerIndex+1:]...)
 }
 
-func (p *Poker) GetWinner() {
+func (p *Poker) GetWinner() Play {
 
 	players := p.AvailablePlayers
 	tableCards := p.TableCards
@@ -111,20 +111,21 @@ func (p *Poker) GetWinner() {
 		log.Println("========================================")
 	}
 
-	// DESENVOLVER A LÓGICA DO DESEMPATE
-	// maxPlay := plays[0]
-	// plays = plays[1:]
+	maxPlay := plays[0]
+	plays = plays[1:]
 
-	// for _, play := range plays {
-	// 	if play.Weight > maxPlay.Weight {
-	// 		maxPlay = play
-	// 	}
-	// 	if play.Weight == maxPlay.Weight {
-	// 		maxPlay = CheckTieBreak(maxPlay, play)
-	// 	}
-	// }
+	for _, play := range plays {
+		if play.Combination.Weight > maxPlay.Combination.Weight {
+			maxPlay = play
+		}
+		if play.Combination.Weight == maxPlay.Combination.Weight {
+			if play.GreaterCard.Value > maxPlay.GreaterCard.Value {
+				maxPlay = play
+			}
+		}
+	}
 
-	// cards := p.CardsInGame
+	return maxPlay
 }
 func (p *Poker) CheckPlay(playerHand []Card, tableCards []Card) (Combination, Card) {
 
@@ -138,7 +139,7 @@ func (p *Poker) CheckPlay(playerHand []Card, tableCards []Card) (Combination, Ca
 	hasFullHouse := p.CheckFullHouse(playerHand, tableCards)
 	hasFourOfKind := p.CheckFourOfKind(playerHand, tableCards)
 	hasStraightFlush := p.CheckStraightFlush(playerHand, tableCards)
-	hasRoyalFlush := false
+	hasRoyalFlush := p.CheckRoyalFlush(playerHand, tableCards)
 
 	if hasPair && !hasTwoPair && !hasThreeOfKind && !hasFourOfKind && !hasFullHouse && !hasStraight {
 		return Combination{Name: "Par", Weight: 1}, Card{}
@@ -149,10 +150,10 @@ func (p *Poker) CheckPlay(playerHand []Card, tableCards []Card) (Combination, Ca
 	if hasThreeOfKind && !hasFourOfKind && !hasFullHouse {
 		return Combination{Name: "Trinca", Weight: 3}, Card{}
 	}
-	if hasStraight && !hasStraightFlush {
+	if hasStraight && !hasStraightFlush && !hasRoyalFlush {
 		return Combination{Name: "Sequencia", Weight: 4}, Card{}
 	}
-	if hasFlush && !hasStraightFlush {
+	if hasFlush && !hasStraightFlush && !hasRoyalFlush {
 		return Combination{Name: "Flush", Weight: 5}, Card{}
 	}
 	if hasFullHouse {
@@ -282,7 +283,7 @@ func (p *Poker) CheckStraight(playerHand []Card, tableCards []Card) (bool, []int
 		return true, startValues
 	}
 
-	if isArithmeticSequence(midValues) {
+	if isArithmeticSequence(midValues) && !isArithmeticSequence(lastValues) {
 		return true, midValues
 	}
 
@@ -427,8 +428,10 @@ func (p *Poker) CheckRoyalFlush(playerHand []Card, tableCards []Card) bool {
 		return false
 	}
 
-	for i := 10; i <= 14; i++ {
-		if foundedValues[i] != i {
+	royalNumbers := []int{10, 11, 12, 13, 14}
+
+	for i := 0; i < 5; i++ {
+		if !Contains(royalNumbers, foundedValues[i]) {
 			return false
 		}
 	}
@@ -483,4 +486,14 @@ func (p *Poker) GetValueOfCards(value string) int {
 
 func CheckTieBreak(PlayA Play, PlayB Play) Play {
 	return PlayA
+}
+
+// Função para verificar se um valor está presente em uma fatia
+func Contains(slice []int, value int) bool {
+	for _, item := range slice {
+		if item == value {
+			return true
+		}
+	}
+	return false
 }

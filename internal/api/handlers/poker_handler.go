@@ -55,9 +55,15 @@ func (p *PokerHandler) GetWinner(w http.ResponseWriter, r *http.Request) {
 	poker.AvailablePlayers = data.Players
 	poker.TableCards = data.TableCards
 
-	poker.GetWinner()
+	winner := poker.GetWinner()
+
+	dataResponse := map[string]interface{}{
+		"winner":      winner.Player,
+		"combination": winner.Combination,
+	}
+	jsonData, err := json.Marshal(dataResponse)
 
 	// Resposta de exemplo
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("JSON decodificado com sucesso"))
+	w.Write(jsonData)
 }
